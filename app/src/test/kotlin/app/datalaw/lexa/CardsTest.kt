@@ -66,7 +66,7 @@ class CardsTest {
     fun candidateKeys() {
         assertEquals(listOf("la casa", "casa"), CardLogic.candidateKeys("La casa"))
         assertEquals(listOf("l'amico", "amico"), CardLogic.candidateKeys("L'amico"))
-        assertEquals(listOf("isola"), CardLogic.candidateKeys("Isola"), "«i» в начале слова — не артикль")
+        assertEquals("«i» в начале слова — не артикль", listOf("isola"), CardLogic.candidateKeys("Isola"))
         assertEquals("casa", CardLogic.dedupKey("La casa."))
     }
 
