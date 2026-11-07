@@ -1,0 +1,18 @@
+.gradle/
+build/
+app/build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+release/
+.data-cache/
+*.log
+.DS_Store
+__pycache__/
+
+# Собранный словарь (десятки МБ) — генерируется: python3 scripts/build_data.py --download
+public/data/*
+!public/data/.gitkeep
+
+# ВАЖНО: signing/datalaw_lexa.keystore КОММИТИТСЯ (публичный ключ, см. README)

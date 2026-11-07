@@ -1,0 +1,116 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_VERSION: '8.11.1'
+
+jobs:
+  check:
+    name: Unit tests & data pipeline tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Kotlin unit tests
+        run: gradle :app:testDebugUnitTest
+      - name: Data pipeline tests (Python)
+        run: python3 scripts/test_build_data.py
+
+  data:
+    name: Build and publish dictionary
+    permissions:
+      contents: write
+    # тяжёлая сборка — не для pull request'ов
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore built dictionary
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: public/data
+          key: dict-it-v1-${{ hashFiles('scripts/build_data.py') }}
+      - name: Build dictionary (ru.Wiktionary + wordfreq + Tatoeba)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          pip install wordfreq
+          python3 scripts/build_data.py --download --require-wordfreq
+      # Словарь публикуется в ветку `dictionary` этого же (публичного) репозитория и раздаётся
+      # через raw.githubusercontent.com — без Pages и каких-либо настроек.
+      - name: Publish dictionary to branch "dictionary"
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public/data
+          publish_branch: dictionary
+          force_orphan: true
+          enable_jekyll: false
+          commit_message: 'dictionary ${{ github.sha }}'
+
+  android:
+    name: Signed APK
+    if: github.event_name != 'pull_request'
+    needs: [check, data]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+      - name: Dictionary URL (branch "dictionary" of this repository)
+        run: echo "DATA_URL=https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/dictionary/" >> "$GITHUB_ENV"
+      # подпись — постоянный ключ из signing/ (см. app/build.gradle.kts); versionCode = номер запуска
+      - name: Build release APK
+        run: gradle :app:assembleRelease
+      - name: Name the APK
+        run: |
+          VERSION=$(grep '^versionName=' version.properties | cut -d= -f2)
+          mkdir -p release
+          cp app/build/outputs/apk/release/app-release.apk "release/datalaw_lexa_it-${VERSION}.apk"
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: datalaw_lexa_it-apk
+          path: release/*.apk
+          if-no-files-found: error
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
