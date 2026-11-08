@@ -33,6 +33,9 @@ class Dictionary(
     suspend fun readFile(path: String): String? {
         files.get(Area.PACK, path)?.let { return it }
         files.get(Area.CACHE, path)?.let { return it }
+        // Пакет скачан целиком: шарда нет только потому, что в нём нечего хранить (нет примеров, нет слов
+        // на эту букву). Без этой проверки офлайн такие слова давали «нет соединения» вместо пустого результата.
+        if (files.has(Area.PACK, PACK_MANIFEST)) return null
         val text = Remote.fetch(dataUrl, path) ?: return null
         runCatching { files.put(Area.CACHE, path, text) }
         return text

@@ -35,6 +35,9 @@ private val memo = object : LinkedHashMap<Any, Box>(64, 0.75f, true) {
     override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Any, Box>?): Boolean = size > 300
 }
 
+/** Забыть всё прочитанное за сессию — после установки, обновления или удаления словаря. */
+fun clearResourceMemo() = memo.clear()
+
 /**
  * Асинхронная загрузка по ключу с сессионным мемо (аналог useResource из веб-версии).
  * key == null — ничего не грузим (ленивые вкладки).

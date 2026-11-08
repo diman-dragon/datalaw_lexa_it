@@ -67,6 +67,7 @@ import app.datalaw.lexa.store.UiLang
 import app.datalaw.lexa.ui.components.GhostButton
 import app.datalaw.lexa.ui.components.LogoMark
 import app.datalaw.lexa.ui.components.PrimaryButton
+import app.datalaw.lexa.ui.components.clearResourceMemo
 import app.datalaw.lexa.ui.components.Segmented
 import app.datalaw.lexa.ui.components.rememberResource
 import app.datalaw.lexa.ui.components.rememberSay
@@ -227,6 +228,7 @@ private fun PageData() {
             try {
                 app.pack.install { progress = it }
                 app.dictionary.reset()
+                clearResourceMemo()
                 store.showToast(t(Str.toastDownloaded))
             } catch (e: CancellationException) {
                 store.showToast(t(Str.toastDownloadCancelled))
@@ -250,12 +252,13 @@ private fun PageData() {
                     scope.launch {
                         app.pack.remove()
                         app.dictionary.reset()
+                        clearResourceMemo()
                         store.showToast(t(Str.toastRemovedPack))
                         refresh()
                     }
                 }) { Text(t(Str.dataRemove), color = c.danger) }
             },
-            dismissButton = { TextButton({ confirmRemove = false }) { Text(t(Str.cardsCancel)) } },
+            dismissButton = { TextButton({ confirmRemove = false }) { Text(t(Str.cancel)) } },
             containerColor = c.surface,
         )
     }

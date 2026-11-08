@@ -161,12 +161,13 @@ private fun groupByDay(items: List<HistoryItem>, lang: UiLang): List<Pair<String
     val today = LocalDate.now(zone)
     val locale = if (lang == UiLang.RU) Locale("ru") else Locale.ENGLISH
     val fmt = DateTimeFormatter.ofPattern("d MMMM", locale)
+    val fmtYear = DateTimeFormatter.ofPattern("d MMMM yyyy", locale)
     return items.groupBy { java.time.Instant.ofEpochMilli(it.at).atZone(zone).toLocalDate() }.map { (day, list) ->
         val diff = java.time.temporal.ChronoUnit.DAYS.between(day, today)
         val label = when (diff) {
             0L -> t(Str.dayToday)
             1L -> t(Str.dayYesterday)
-            else -> day.format(fmt)
+            else -> day.format(if (day.year == today.year) fmt else fmtYear) // год — иначе ключи секций совпадут
         }
         label to list
     }
@@ -186,7 +187,7 @@ fun HistoryScreen(nav: Nav) {
             title = { Text(t(Str.historyTitle)) },
             text = { Text(t(Str.historyClearConfirm)) },
             confirmButton = { TextButton({ store.clearHistory(); confirm = false }) { Text(t(Str.historyClear), color = c.danger) } },
-            dismissButton = { TextButton({ confirm = false }) { Text(t(Str.cardsCancel)) } },
+            dismissButton = { TextButton({ confirm = false }) { Text(t(Str.cancel)) } },
             containerColor = c.surface,
         )
     }

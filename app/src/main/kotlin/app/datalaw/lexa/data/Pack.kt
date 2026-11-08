@@ -1,6 +1,9 @@
 package app.datalaw.lexa.data
 
 
+/** Имя манифеста: он записывается последним, поэтому его наличие в области PACK = пакет скачан целиком. */
+const val PACK_MANIFEST = "manifest.json"
+
 /** Скачанный на устройство словарь («пакет»). Признак готовности — manifest.json в области PACK. */
 data class PackInfo(val installed: Boolean, val version: String? = null, val files: Int = 0, val bytes: Long = 0)
 
@@ -9,7 +12,7 @@ class Pack(
     private val dataUrl: String = Config.DATA_URL,
 ) {
     private companion object {
-        const val DONE = "manifest.json"
+        const val DONE = PACK_MANIFEST
         const val STARTED = ".version"
     }
 

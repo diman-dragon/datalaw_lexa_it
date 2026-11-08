@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 
 sealed interface Route {
     data object Home : Route
-    data object Cards : Route
     data object Saved : Route
     data object History : Route
     data object Settings : Route
@@ -45,7 +44,7 @@ class Nav {
     /** Вкладка, к которой относится текущий экран (для подсветки нижней панели). */
     val activeTab: Route?
         get() = when (val c = current) {
-            Route.Home, Route.Cards, Route.Saved, Route.History, Route.Settings -> c
+            Route.Home, Route.Saved, Route.History, Route.Settings -> c
             else -> null
         }
 }

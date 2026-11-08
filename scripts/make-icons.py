@@ -5,8 +5,8 @@
 что и у других приложений DataLaw (Forma: «D» + гантель).
 
 Выход:
-  assets/{icon-only,icon-foreground,icon-monochrome,icon-background,splash,splash-dark}.png  (для scripts/android_icons.py)
-  public/logo-mask.png        белая «D» на прозрачном (маска знака в интерфейсе)
+  assets/{icon-only,icon-foreground,icon-monochrome,icon-background,splash,splash-dark}.png  (дальше: scripts/sync_icons.py кладёт их в ресурсы Android)
+  assets/logo-mask.png        белая «D» на прозрачном (маска знака в интерфейсе)
   store/play-icon-512.png     иконка для Google Play
 
 Запуск:  python3 scripts/make-icons.py      (нужны Pillow и numpy)
@@ -129,13 +129,12 @@ def main() -> None:
         sp.save(out / name)
 
     # в интерфейсе знак — маска, цвет задаёт тема
-    (ROOT / "public").mkdir(exist_ok=True)
     g = fit(GLYPH, 512, 512)
     mask = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     white = Image.new("RGBA", g.size, (255, 255, 255, 255))
     white.putalpha(g)
     mask.alpha_composite(white, ((512 - g.width) // 2, (512 - g.height) // 2))
-    mask.save(ROOT / "public" / "logo-mask.png", optimize=True)
+    mask.save(out / "logo-mask.png", optimize=True)
 
     (ROOT / "store").mkdir(exist_ok=True)
     play = Image.new("RGB", (S, S), BG)

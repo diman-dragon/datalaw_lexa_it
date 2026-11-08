@@ -78,6 +78,8 @@ jobs:
   android:
     name: Signed APK
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: write   # публикация APK в GitHub Release (softprops/action-gh-release)
     needs: [check, data]
     runs-on: ubuntu-latest
     timeout-minutes: 45

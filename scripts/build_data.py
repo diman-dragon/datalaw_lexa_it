@@ -771,6 +771,22 @@ def write_shards(out: Path, folder: str, count: int, items: dict[str, Any]) -> i
     return len(buckets)
 
 
+def prepare_out(out: Path) -> None:
+    """Готовит каталог вывода. Удаляет только прежнюю сборку словаря (или пустой каталог),
+    чтобы ошибка в --out не стёрла чужие файлы."""
+    out = out.resolve()
+    if out.exists():
+        if not out.is_dir():
+            raise SystemExit(f"--out {out}: это файл, а не каталог")
+        content = list(out.iterdir())
+        if content and not (out / "meta.json").is_file():
+            raise SystemExit(f"--out {out}: каталог не пуст и не похож на прежнюю сборку (нет meta.json) — не удаляю")
+        if out in (ROOT, Path.home(), Path(out.anchor)):
+            raise SystemExit(f"--out {out}: отказываюсь очищать этот каталог")
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+
+
 def build(
     kaikki: Path,
     out: Path,
@@ -829,7 +845,7 @@ def build(
         extra_forms += 1
     log(f"  форм из поля forms добавлено: {extra_forms:,}")
 
-    # Обратный индекс RU → EN
+    # Обратный индекс RU → IT
     log("Обратный индекс RU→IT…")
     reverse: dict[str, dict[str, int]] = defaultdict(dict)
     display: dict[str, str] = {}
@@ -856,9 +872,7 @@ def build(
             log(f"  Tatoeba пропущена: {e}")
 
     # Запись
-    if out.exists():
-        shutil.rmtree(out)
-    out.mkdir(parents=True)
+    prepare_out(out)
     n_e = write_shards(out, "e", SHARDS_E, entries)
     n_r = write_shards(out, "r", SHARDS_R, rev_out)
     n_s = write_shards(out, "s", SHARDS_S, sentences) if sentences else 0

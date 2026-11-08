@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Заставка: цвет фона «какао», как в прежней версии -->
+    <!-- Заставка: тёмный фон #0A0A0B — под него нарисована иконка (assets/icon-background.png) -->
     <style name="Theme.Lexa.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#0A0A0B</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>

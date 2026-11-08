@@ -57,9 +57,6 @@ object Text {
         return Regex("(?<!\\p{L})" + body + "(?!\\p{L})", RegexOption.IGNORE_CASE)
     }
 
-    /** Пробелы схлопнуты, края обрезаны; регистр и пунктуация сохранены. */
-    fun tidy(input: String): String = base(input).replace(SPACES, " ").trim()
-
     enum class Script { LATIN, CYRILLIC, OTHER }
 
     /** На каком языке введён запрос — по первой букве. */

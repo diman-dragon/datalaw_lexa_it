@@ -40,8 +40,6 @@ data class Settings(
     val offlineHint: Boolean = true,
     /** Язык голосового ввода (запоминается между запусками) */
     val voiceLang: VoiceLangPref = VoiceLangPref.IT,
-    /** «Карточки»: сколько переводов класть на оборот */
-    val cardsMaxTr: Int = 3,
 )
 
 @Serializable

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
-import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -36,7 +35,6 @@ import app.datalaw.lexa.ui.components.ToastHost
 import app.datalaw.lexa.ui.components.rememberTap
 import app.datalaw.lexa.ui.i18n.Str
 import app.datalaw.lexa.ui.i18n.t
-import app.datalaw.lexa.ui.screens.CardsScreen
 import app.datalaw.lexa.ui.screens.FindScreen
 import app.datalaw.lexa.ui.screens.HistoryScreen
 import app.datalaw.lexa.ui.screens.HomeScreen
@@ -50,7 +48,6 @@ private class Tab(val route: Route, val icon: ImageVector, val activeIcon: Image
 
 private val TABS = listOf(
     Tab(Route.Home, Icons.Rounded.Search, Icons.Rounded.Search, Str.navSearch),
-    Tab(Route.Cards, Icons.Rounded.Style, Icons.Rounded.Style, Str.navCards),
     Tab(Route.Saved, Icons.Rounded.StarBorder, Icons.Rounded.Star, Str.navSaved),
     Tab(Route.History, Icons.Rounded.History, Icons.Rounded.History, Str.navHistory),
     Tab(Route.Settings, Icons.Rounded.Tune, Icons.Rounded.Tune, Str.navSettings),
@@ -100,7 +97,6 @@ fun LexaRoot() {
                     key(route) {
                         when (route) {
                             Route.Home -> HomeScreen(nav)
-                            Route.Cards -> CardsScreen()
                             Route.Saved -> SavedScreen(nav)
                             Route.History -> HistoryScreen(nav)
                             Route.Settings -> SettingsScreen()

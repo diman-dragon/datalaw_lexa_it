@@ -28,3 +28,5 @@ save("icon-background.png", "drawable-nodpi/ic_launcher_background.png", 432)
 save("icon-monochrome.png", "drawable-nodpi/ic_launcher_monochrome.png", 432)
 # запасная иконка для Android 7 (minSdk 24)
 save("icon-only.png", "mipmap-xxxhdpi/ic_launcher.png", 192)
+# маска знака в интерфейсе (LogoMark): цвет задаёт тема
+save("logo-mask.png", "drawable-nodpi/logo_mask.png", 512)
